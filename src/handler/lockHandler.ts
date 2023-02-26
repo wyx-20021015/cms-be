@@ -4,9 +4,11 @@ class Lock {
   p() {
     this.lock = false
   }
+
   v() {
     this.lock = true
   }
+
   getStatus() {
     return this.lock
   }

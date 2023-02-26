@@ -1,19 +1,20 @@
 // 没有性别的数据 所以性别是随机生成的
 
-import userModel from '../src/db/user'
-import User from '../src/shared/user'
+import stuModel from '../src/db/stu'
+import Stu from '../src/shared/stu'
 import setupMongo from '../src/db/index'
 import * as fs from 'fs'
 import * as path from 'path'
 import grades from '../src/shared/grades'
 import majors from '../src/shared/majors'
 const axios = require('axios')
+// import * as axios from 'axios'
 
-setupMongo()
+setupMongo().catch((e) => console.log(e))
 
 const sexs = ['female', 'male']
 
-const testData: Array<User> = []
+const testData: Array<Stu> = []
 
 const randomPhone = () => {
   const phone: Array<number> = []
@@ -32,7 +33,7 @@ const data = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, 'data.json'), { encoding: 'utf-8' })
 ).res
 // console.log(data)
-for (let item of data) {
+for (const item of data) {
   const name = item.name
   const img = item.img
   const sex: any = sexs[Math.floor(Math.random() * 2)]
@@ -43,7 +44,7 @@ for (let item of data) {
   const major = majors[Math.floor(Math.random() * majors.length)]
   const avatar = `avatar-${Date.now().toString(13)}${Math.floor(
     Math.random() * 999
-  )}.${ext}`
+  )}.${ext as string}`
   axios.get(img, { responseType: 'arraybuffer' }).then((res) => {
     fs.writeFileSync(
       path.resolve(__dirname, `../src/file/avatar/${avatar}`),
@@ -61,7 +62,7 @@ for (let item of data) {
   })
 }
 
-userModel
+stuModel
   .insertMany(testData)
   .then(function () {
     console.log('Data inserted, use ctrl+c to exit') // Success

@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Router = require("koa-router");
+const upload_middleware_1 = require("../crud/upload/upload.middleware");
+const auth_middleware_1 = require("../crud/auth/auth.middleware");
+const router = new Router({ prefix: '/api/upload' });
+router.post('/', auth_middleware_1.verifyAuth, upload_middleware_1.createResource, upload_middleware_1.formatRes);
+router.get('/:field/:fileName(.*)', upload_middleware_1.getResource);
+router.delete('/:field/:fileName(.*)', auth_middleware_1.verifyAuth, upload_middleware_1.deleteResource);
+exports.default = router;

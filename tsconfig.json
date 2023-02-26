@@ -1,17 +1,17 @@
 {
   "compilerOptions": {
-      "module": "commonjs",
-      "declaration": false,
-      "removeComments": true,
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "target": "es6",
-      "sourceMap": false,
-      "outDir": "./dist",
-      "moduleResolution": "Node",
-      "allowSyntheticDefaultImports": true,
+    "module": "commonjs",
+    "declaration": false,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es6",
+    "sourceMap": false,
+    "outDir": "./dist",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "strictNullChecks": false
   },
-  "exclude": [
-      "node_modules"
-  ],
+  "exclude": ["node_modules"],
+  "include": ["src", "scripts"]
 }

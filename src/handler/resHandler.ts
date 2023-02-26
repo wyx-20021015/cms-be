@@ -3,11 +3,14 @@ import httpRes from '../shared/httpRes'
 const resHandler: Middleware = (ctx, next) => {
   // console.log(ctx.body, ctx.success, ctx.status, ctx.msg)
   const data = ctx.body || null
-  let status = ctx.status || 200
   const msg = ctx.msg || null
-  let success = ctx.success === undefined ? true : ctx.success
-  if (success === true) status = 200
-  const res: httpRes = { status, msg, data, success }
+  if (data === null && msg === null) {
+    ctx.status = 404
+    ctx.success = false
+  }
+  const success = ctx.success === undefined ? true : ctx.success
+  if (success === true) ctx.status = 200
+  const res: httpRes = { msg, data, success }
   ctx.body = res
 }
 

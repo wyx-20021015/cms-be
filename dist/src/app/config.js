@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MONGO_HOST = exports.MONGO_PORT = exports.MONGO_DB = exports.APP_PORT = void 0;
+const dotenv = require("dotenv");
+dotenv.config();
+const { APP_PORT, MONGO_DB, MONGO_PORT, MONGO_HOST } = process.env;
+exports.APP_PORT = APP_PORT;
+exports.MONGO_DB = MONGO_DB;
+exports.MONGO_PORT = MONGO_PORT;
+exports.MONGO_HOST = MONGO_HOST;

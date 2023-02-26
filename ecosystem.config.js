@@ -5,7 +5,7 @@ module.exports = {
   apps: [
     {
       name,
-      script: path.resolve(__dirname, './dist/app.js'),
+      script: path.resolve(__dirname, './dist/src/index.js'),
       instances: 1,
       autorestart: false,
       watch: true,

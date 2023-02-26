@@ -1,73 +1,65 @@
 import { Middleware } from 'koa'
-import md5passwd from '../../utils/md5passwd'
-import * as jwt from 'jsonwebtoken'
 import * as fs from 'fs'
 import * as path from 'path'
-const publicKey = fs.readFileSync(
-  path.resolve(__dirname, '../../app/key/public.key')
+import md5password from '../../utils/md5passwd'
+
+const admin = JSON.parse(
+  fs.readFileSync(path.resolve(__dirname, '../../app/admin/admin.json'), {
+    encoding: 'utf-8'
+  })
 )
-const privateKey = fs.readFileSync(
-  path.resolve(__dirname, '../../app/key/private.key')
-)
+
 interface loginBody {
-  password: String
-}
-const verifyAuth: Middleware = async (ctx, next) => {
-  console.log('测试token的接口')
-  const { fieldName } = ctx.params
-  if (fieldName === 'md') await verifyAuthByHeader(ctx, next)
-  else if (fieldName === 'avatar') await verifyAuthByQuery(ctx, next)
-  ctx.msg = 'ok'
-  await next()
-}
-
-const verifyAuthByHeader: Middleware = async (ctx, next) => {
-  const token = ctx.headers.authorization.replace('Bearer ', '')
-  await verifyJwt(token)
-}
-
-const verifyJwt = async (token: string) => {
-  try {
-    const res = jwt.verify(token, publicKey, { algorithms: ['RS256'] })
-    return res
-  } catch (err) {
-    throw new Error('无效的token!')
-  }
-}
-
-const verifyAuthByQuery: Middleware = async (ctx, next) => {
-  // img的src 不好在header携带token，图片请求的时候token放在query
-  const { token } = ctx.query
-  await verifyJwt(token as string)
+  password: string
+  username: string
 }
 
 const verifyLogin: Middleware = async (ctx, next) => {
-  console.log('验证密码接口')
-  const { password } = ctx.request.body as loginBody
+  let { username, password } = ctx.request.body as loginBody
+  username = username.trim()
+  password = password.trim()
   if (!password) {
     throw new Error('密码不能为空!')
   }
-  if (password != md5passwd('wyx123666') && password != 'wyx123666') {
-    //开发时在APIfox里用wyx123666，生产时应把 'wyx123666'删掉
+  if (
+    (username !== md5password(admin[0].username) ||
+      password !== md5password(admin[0].password)) &&
+    (username !== 'wyx' || password !== 'wyx123')
+  ) {
+    // 生产时用户密码应该不能明文传输
     console.log('wrong')
     throw new Error('密码错误!')
   }
   ctx.msg = 'ok!'
   await next()
 }
-const genToken: Middleware = async (ctx, next) => {
-  const user = 'wyx'
-  let token
+
+const setSession: Middleware = async (ctx, next) => {
   try {
-    token = jwt.sign({ user }, privateKey, {
-      expiresIn: '30days',
-      algorithm: 'RS256'
-    })
+    ctx.session.username = admin[0].username
   } catch (e) {
     console.log(e)
   }
-  console.log('颁发token完成')
-  ctx.body = { token }
+  console.log('ctx.session.username', ctx.session.username)
+  ctx.body = admin[0].username
   await next()
 }
-export { verifyLogin, verifyAuth, genToken }
+
+const verifyAuth: Middleware = async (ctx, next) => {
+  console.log('session:', ctx?.session?.username)
+  const username = ctx?.session?.username
+  if (username !== admin[0].username) {
+    throw new Error('请先登录!')
+  }
+  ctx.success = true
+  ctx.body = username
+  await next()
+}
+
+const logOut: Middleware = async (ctx, next) => {
+  ctx.session = null
+  ctx.success = true
+  ctx.msg = 'ok'
+  await next()
+}
+export { verifyLogin, verifyAuth, setSession, logOut }

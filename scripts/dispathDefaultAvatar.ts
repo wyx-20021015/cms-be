@@ -1,20 +1,22 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import Service from '../src/crud/user/user.service'
+import Service from '../src/crud/stu/stu.service'
 import setupMongo from '../src/db/index'
 
-setupMongo()
+setupMongo().catch((e) => e)
 const dispathDefaultAvatar = async () => {
-  const allUserFile = await Service.allUserFileWithId()
+  const allStuFile = await Service.allStuFileWithId()
   const allFile = fs.readdirSync(path.resolve(__dirname, '../src/file/avatar'))
   const allFileSet = new Set(allFile)
-  for (let key of allUserFile.keys()) {
+  for (const key of allStuFile.keys()) {
     if (!allFileSet.has(key.avatar)) {
-      Service.updateAvatar(key._id, 'default.png')
+      await Service.updateAvatar(key._id, 'default.png')
     }
   }
 }
 
-dispathDefaultAvatar().then(() => {
-  console.log('use ctrl+c to exit..')
-})
+dispathDefaultAvatar()
+  .then(() => {
+    console.log('use ctrl+c to exit..')
+  })
+  .catch((e) => e)

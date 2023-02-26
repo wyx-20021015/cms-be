@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Router = require("koa-router");
+const auth_middleware_1 = require("../crud/auth/auth.middleware");
+const stu_middleware_1 = require("../crud/stu/stu.middleware");
+const lockHandler_1 = require("../handler/lockHandler");
+const router = new Router({ prefix: '/api/stu' });
+router.post('/', lockHandler_1.judgeLock, auth_middleware_1.verifyAuth, stu_middleware_1.createStu);
+router.delete('/:id', auth_middleware_1.verifyAuth, stu_middleware_1.deleteStu);
+router.patch('/', auth_middleware_1.verifyAuth, stu_middleware_1.updateStu);
+router.get('/:id', auth_middleware_1.verifyAuth, stu_middleware_1.getStuById);
+router.post('/search', auth_middleware_1.verifyAuth, stu_middleware_1.searchStu);
+exports.default = router;
